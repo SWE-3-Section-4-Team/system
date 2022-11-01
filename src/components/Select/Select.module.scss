@@ -1,0 +1,103 @@
+.root {
+    font-family: var(--text-font-family);
+
+    &:focus-within .select {
+        box-shadow: var(--shadow-border);
+    }
+
+    &.disabled {
+        opacity: .8;
+    }
+
+    .label {
+        display: block;
+        font-size: var(--text-s-xs);
+        margin-bottom: 4px;
+        color: var(--c-grey2);
+    }
+
+    .select {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: .8125rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        background-color: var(--c-control);
+
+        border-radius: var(--base-radius-sm);
+
+        transition: box-shadow var(--a-time-sm) var(--a-ease);
+
+        > span:first-of-type {
+            width: calc(100% - 28px);
+        }
+    }
+
+    .value {
+        text-overflow: ellipsis;
+    }
+
+    .chevron {
+        display: block;
+        width: 20px;
+        height: 20px;
+        margin-left: 8px;
+        color: var(--c-neutral-500);
+    }
+}
+
+.content {
+    padding: 8px;
+    border-radius: var(--base-radius-sm);
+    background-color: var(--c-bg);
+    z-index: 101;
+    box-shadow: var(--shadow-border);
+    box-sizing: border-box;
+
+    .scrollButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            display: block;
+            height: 12px;
+            width: 12px;
+        }
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        border-radius: var(--base-radius-sm);
+        padding: 8px;
+        font-size: 0.8125rem;
+        cursor: default;
+
+        &[data-highlighted] {
+            background-color: var(--c-control);
+        }
+
+        &[data-state="checked"] {
+            background-color: var(--c-grey1);
+            color: var(--c-white);
+        }
+
+        .itemContent {
+            flex-grow: 1;
+        }
+
+        .check {
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+
+        .check svg {
+            display: block;
+            width: 16px;
+            height: 16px;
+        }
+    }
+}

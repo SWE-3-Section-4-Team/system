@@ -1,0 +1,22 @@
+@font-face {
+  font-family: 'Druk Text Wide';
+  src: url('/fonts/DrukTextWide-Heavy.woff2') format('woff2'),
+      url('/fonts/DrukTextWide-Heavy.woff') format('woff');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+:root {
+  --text-font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, Roboto, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --text-druk: 'Druk Text Wide', -apple-system, BlinkMacSystemFont, Roboto, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+
+  --text-s-xs: 13px;
+  --text-s-sm: 14px;
+  --text-s-md: 16px;
+  --text-s-lg: 18px;
+
+  --text-line-height: 1.6;
+  --text-line-height-p: 1.3;
+}

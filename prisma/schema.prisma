@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.text annotations in model Account below
+    // Further reading: 
+    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+    PATIENT
+    ADMIN
+    DOCTOR
+}
+
+enum BloodType {
+    Apositive
+    Anegative
+    Bpositive
+    Bnegative
+    ABpositive
+    ABnegative
+    Opositive
+    Onegative
+}
+
+enum MartialStatus {
+    SINGLE
+    MARRIED
+}
+
+model User {
+    id            String    @id @default(cuid())
+    pin           String    @unique
+    password      String
+    role          Role
+    doctor        Doctor?
+    patient       Patient?
+}
+
+model Patient {
+    id                  String    @id @default(cuid())
+    pin                 String    @unique
+    name                String
+    surname             String
+    middlename          String
+    phone               String
+    emergencyPhone      String?
+    email               String?
+    address             String
+    bloodType           BloodType
+    martialStatus       MartialStatus
+
+    registrationDate    DateTime  @default(now())
+
+    userId              String    @unique
+    user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    appointmentRequests AppointmentRequest[]
+    appointments        Appointment[]
+    treatmentPlans      TreatmentPlan[]
+}
+
+model Doctor {
+    id                  String    @id @default(cuid())
+    pin                 String    @unique
+    name                String
+    surname             String
+    middlename          String
+    phone                 String
+    departmentId        String
+
+    userId              String      @unique
+    department          Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+    user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    services            Service[]
+    appointmentRequests AppointmentRequest[]
+    appointments        Appointment[]
+}
+
+model Department {
+    id          String   @id @default(cuid())
+    name        String
+    description String
+    services    Service[]
+    doctors     Doctor[]
+}
+
+model Service {
+    id          String   @id @default(cuid())
+    name        String
+    description String
+    departmentId String
+    cost        Int
+    department  Department @relation(fields: [departmentId], references: [id])
+    doctors     Doctor[]
+    appointmentRequests     AppointmentRequest[]
+    appointments            Appointment[]
+}
+
+model Appointment {
+    id        String   @id @default(cuid())
+    date      DateTime
+    doctorId  String
+    patientId String
+    serviceId String
+    slot      Int
+    service   Service   @relation(fields: [serviceId], references: [id])
+    patient   Patient      @relation(fields: [patientId], references: [id])
+    doctor    Doctor    @relation(fields: [doctorId], references: [id])
+}
+
+model AppointmentRequest {
+    id        String   @id @default(cuid())
+    date      DateTime
+    
+    serviceId String
+    doctorId  String
+    patientId String
+    service   Service  @relation(fields: [serviceId], references: [id])
+    patient   Patient     @relation(fields: [patientId], references: [id])
+    doctor    Doctor     @relation(fields: [doctorId], references: [id])
+}
+
+enum TreatmentStatus {
+    PENDING
+    COMPLETED
+    CANCELLED
+}
+
+model TreatmentPlan {
+    id        String   @id @default(cuid())
+    startDate DateTime
+    patientId String
+    doctorId  String
+    description String
+    status TreatmentStatus
+    patient   Patient     @relation(fields: [patientId], references: [id])
+}

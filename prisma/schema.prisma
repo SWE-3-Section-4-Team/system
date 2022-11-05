@@ -40,6 +40,7 @@ model User {
     id            String    @id @default(cuid())
     pin           String    @unique
     password      String
+    name          String
     role          Role
     doctor        Doctor?
     patient       Patient?
@@ -74,14 +75,15 @@ model Doctor {
     name                String
     surname             String
     middlename          String
-    phone                 String
+    phone               String
     departmentId        String
+    serviceId           String
 
     userId              String      @unique
     department          Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
     user                User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    service             Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-    services            Service[]
     appointmentRequests AppointmentRequest[]
     appointments        Appointment[]
 }
@@ -95,13 +97,13 @@ model Department {
 }
 
 model Service {
-    id          String   @id @default(cuid())
-    name        String
-    description String
-    departmentId String
-    cost        Int
-    department  Department @relation(fields: [departmentId], references: [id])
-    doctors     Doctor[]
+    id              String   @id @default(cuid())
+    name            String
+    // description     String
+    departmentId    String
+    // cost            Int
+    department      Department @relation(fields: [departmentId], references: [id])
+    doctors         Doctor[]
     appointmentRequests     AppointmentRequest[]
     appointments            Appointment[]
 }

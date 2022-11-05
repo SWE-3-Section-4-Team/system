@@ -1,35 +1,19 @@
 import { BloodType, MartialStatus } from "@prisma/client";
 import { useFormik } from "formik";
-import { type NextPage } from "next";
 import React from "react";
 import toast from "react-hot-toast";
-import { Button } from "../components/Button";
-import { Container } from "../components/Container";
-import { Input } from "../components/Input";
-import { Select } from "../components/Select";
-import { Stack } from "../components/Stack";
-import { Title } from "../components/Typography";
-import { patientSchema, type PatientSchema } from "../schema/patient";
-import { trpc } from "../utils/trpc";
-import { zodToFormik } from "../utils/zodToFormik";
+import { Button } from "../../components/Button";
+import { Container } from "../../components/Container";
+import { Input } from "../../components/Input";
+import { Select } from "../../components/Select";
+import { Stack } from "../../components/Stack";
+import { Title } from "../../components/Typography";
+import { bloodTypeToLabel, martialStatusToLabel } from "../../constants/patient";
+import { patientSchema, type PatientSchema } from "../../schema/patient";
+import { trpc } from "../../utils/trpc";
+import { zodToFormik } from "../../utils/zodToFormik";
 
-const bloodTypeToLabel = {
-    [BloodType.Apositive]: "A+",
-    [BloodType.Anegative]: "A-",
-    [BloodType.Bpositive]: "B+",
-    [BloodType.Bnegative]: "B-",
-    [BloodType.ABpositive]: "AB+",
-    [BloodType.ABnegative]: "AB-",
-    [BloodType.Opositive]: "O+",
-    [BloodType.Onegative]: "O-",
-}
-
-const martialStatusToLabel = {
-    [MartialStatus.MARRIED]: "Married",
-    [MartialStatus.SINGLE]: "Single",
-}
-
-const Register: NextPage = () => {
+export const PatientRegister: React.FC = () => {
     const { mutateAsync } = trpc.patient.register.useMutation({
         onError: ({ message }) => toast.error(message),
     });
@@ -47,10 +31,15 @@ const Register: NextPage = () => {
             bloodType: BloodType.Apositive,
             martialStatus: MartialStatus.SINGLE,
         },
-        onSubmit: (values) => {
-            mutateAsync(values).then(() => {
-                toast.success('OK');
-            })
+        onSubmit: (values, { resetForm }) => {
+            const promise = mutateAsync(values).then(() => {
+                resetForm();
+            });
+            toast.promise(promise, {
+                loading: 'Registering...',
+                success: 'Registered',
+                error: 'Failed to register',
+            });
         },
         validateOnBlur: true,
         validationSchema: zodToFormik(patientSchema),
@@ -64,8 +53,8 @@ const Register: NextPage = () => {
         <div style={{
             padding: '48px 0',
         }}>
-            <Container size="xs">
-                <Title level={1}>Register</Title>
+            <Container size="xs" center={false}>
+                <Title level={1}>Register a patient</Title>
 
                 <form onSubmit={handleSubmit}>
                     <Stack direction="column" gap={8}>
@@ -143,5 +132,3 @@ const Register: NextPage = () => {
         </div>
     )
 }
-
-export default Register;

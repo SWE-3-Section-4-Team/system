@@ -21,8 +21,8 @@ export const patientSchema = z.object({
     name: z.string().min(1).max(255),
     surname: z.string().min(1).max(255),
     middlename: z.string().min(1).max(255),
-    email: z.string().email().max(255).optional(),
-    emergencyPhone: z.string().regex(TEL_REGEXP).optional(),
+    email: z.string().email().max(255).optional().nullable(),
+    emergencyPhone: z.string().regex(TEL_REGEXP).optional().nullable(),
     phone: z.string().regex(TEL_REGEXP),
     address: z.string().min(1).max(255),
     bloodType: z.nativeEnum(BLOOD_TYPES),
@@ -30,3 +30,16 @@ export const patientSchema = z.object({
 });
 
 export type PatientSchema = z.infer<typeof patientSchema>;
+
+export const patientEditSchema = z.object({
+    pin: z.string().regex(PIN_REGEXP),
+    name: z.string().min(1).max(255),
+    surname: z.string().min(1).max(255),
+    middlename: z.string().min(1).max(255),
+    email: z.string().email().max(255).optional().nullable(),
+    address: z.string().min(1).max(255),
+    bloodType: z.nativeEnum(BLOOD_TYPES),
+    martialStatus: z.nativeEnum(MARTIAL_STATUSES),
+});
+
+export type PatientEditSchema = z.infer<typeof patientEditSchema>;

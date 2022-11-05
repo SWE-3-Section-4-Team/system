@@ -1,20 +1,30 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, { User, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import argon2 from 'argon2';
 // Prisma adapter for NextAuth, optional and can be removed
-
-import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
+  session: {
+    strategy: 'jwt',
+    maxAge: 3000,
+  },
   callbacks: {
-    session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id;
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.user = user;
       }
-      return session;
+      return token;
     },
+    session: ({ session, token }) => {
+      session.user = token.user as User;
+      return session;
+    }
+  },
+  pages: {
+    signIn: '/auth',
+    error: '/auth',
   },
   // Configure one or more authentication providers
   providers: [
@@ -40,7 +50,11 @@ export const authOptions: NextAuthOptions = {
         if (!isValid) {
           throw new Error("Invalid credentials");
         }
-        return user;
+        return {
+          id: user.id,
+          name: user.name,
+          role: user.role,
+        };
       }
     }),
   ],

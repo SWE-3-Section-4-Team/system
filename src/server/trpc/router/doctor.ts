@@ -1,12 +1,12 @@
-import { patientEditSchema, patientSchema } from "../../../schema/patient";
 import argon2 from 'argon2';
 import { router, protectedProcedure } from "../trpc";
+import { doctorEditSchema, doctorSchema } from "../../../schema/doctor";
 
-export const patientRouter = router({
+export const doctorRouter = router({
   register: protectedProcedure
-    .input(patientSchema)
+    .input(doctorSchema)
     .mutation(async ({ input, ctx }) => {
-      const { pin, password, ...rest } = input;
+      const { pin, password, departmentId, serviceId, ...rest } = input;
 
       if (!ctx.session.user.id) {
         throw new Error('Unauthorized');
@@ -41,19 +41,49 @@ export const patientRouter = router({
         },
       });
 
-      const patient = await ctx.prisma.patient.create({
+      const department = await ctx.prisma.department.findFirst({
+        where: {
+          id: departmentId,
+        },
+      });
+
+      if (!department) {
+        throw new Error("Department not found");
+      }
+
+      const service = await ctx.prisma.service.findFirst({
+        where: {
+          id: serviceId,
+        },
+      });
+
+      if (!service) {
+        throw new Error("Service not found");
+      }
+
+      const doctor = await ctx.prisma.doctor.create({
         data: {
           pin,
           ...rest,
           user: {
             connect: {
               id: user.id,
-            }
+            },
+          },
+          department: {
+            connect: {
+              id: department.id,
+            },
+          },
+          service: {
+            connect: {
+              id: service.id,
+            },
           },
         }
       });
 
-      return patient;
+      return doctor;
     }),
 
   get: protectedProcedure
@@ -72,20 +102,22 @@ export const patientRouter = router({
         throw new Error("Unauthorized");
       }
 
-      const patients = await ctx.prisma.patient.findMany({
+      const doctor = await ctx.prisma.doctor.findMany({
         include: {
           user: true,
         },
       });
 
-      return patients;
+      return doctor;
     }),
   update: protectedProcedure
-    .input(patientEditSchema)
+    .input(doctorEditSchema)
     .mutation(async ({ input, ctx }) => {
       if (!ctx.session.user.id) {
         throw new Error('Unauthorized');
       }
+
+      const { departmentId, serviceId, ...rest } = input;
 
       const creator = await ctx.prisma.user.findFirst({
         where: {
@@ -97,15 +129,45 @@ export const patientRouter = router({
         throw new Error("Unauthorized");
       }
 
-      const patient = await ctx.prisma.patient.update({
+      const department = await ctx.prisma.department.findFirst({
+        where: {
+          id: departmentId,
+        },
+      });
+
+      if (!department) {
+        throw new Error("Department not found");
+      }
+
+      const service = await ctx.prisma.service.findFirst({
+        where: {
+          id: serviceId,
+        },
+      });
+
+      if (!service) {
+        throw new Error("Service not found");
+      }
+
+      const doctor = await ctx.prisma.doctor.update({
         where: {
           pin: input.pin,
         },
         data: {
-          ...input,
+          ...rest,
+          department: {
+            connect: {
+              id: department.id,
+            },
+          },
+          service: {
+            connect: {
+              id: service.id,
+            }
+          }
         },
       });
 
-      return patient;
+      return doctor;
     }),
 });

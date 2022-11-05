@@ -55,3 +55,7 @@ ol {
   background-color: var(--c-grey1);
   color: var(--c-contrast);
 }
+
+.MuiDataGrid-root {
+  font-family: inherit!important;
+}

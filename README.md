@@ -1,10 +1,10 @@
 # System
 Developed by SWE (Section 3) Team 4:
 - Abylaikhan Kazymbetov
-- Diar
-- Amirzhan
-- 
--
+- Gaukhar Satbekova
+- Amirzhan Armandiyev
+- Diar Demeubay
+- Gulbakhram Niyazova
 
 ## Installation
 - Make sure that you have node.js installed on your computer: get it from [here](https://nodejs.org/en/download/)

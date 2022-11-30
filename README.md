@@ -21,6 +21,7 @@ npm ci
 postgres://postgres:postgrespw@localhost:55000/system?schema=public
 ```
 - Put in your `.env` file
+- Get your S3 credentials. While development you can use [S3 Mock](https://github.com/adobe/S3Mock)
 - Check if you have everything needed in your `.env` file. Use `.env-example` as an example :)
 - Push database schema
 ```bash

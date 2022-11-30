@@ -24,6 +24,9 @@
         font-size: .8125rem;
         font-weight: 500;
         padding: 8px 12px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         background-color: var(--c-control);
 
         border-radius: var(--base-radius-sm);

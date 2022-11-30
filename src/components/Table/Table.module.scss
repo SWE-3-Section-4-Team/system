@@ -1,0 +1,51 @@
+.root {
+    width: 100%;
+    overflow-x: auto;
+    box-shadow: var(--shadow-border);
+    border-radius: var(--base-radius-md);
+
+    table {
+        width: 100%;
+        white-space: nowrap;
+        border-collapse: collapse;
+    }
+
+    thead {
+        border-bottom: 1px var(--c-border) solid;
+
+        th {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 15px;
+        }
+    }
+
+    tbody {
+        font-size: 14px;
+
+        td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+
+        tr:not(:last-of-type) td {
+            border-bottom: 1px var(--c-border) solid;
+        }
+    }
+
+    .empty {
+        padding: 32px;
+        text-align: center;
+        color: var(--c-text-secondary);
+    }
+
+    .footer {
+        border-top: 1px var(--c-border) solid;
+
+        .text {
+            font-size: 13px;
+            font-weight: 500;
+            padding: 10px 15px;
+        }
+    }
+}

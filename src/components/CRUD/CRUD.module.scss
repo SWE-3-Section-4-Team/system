@@ -1,0 +1,55 @@
+.root {
+    .tableWrap {
+        border-radius: var(--base-radius-sm);
+        overflow: hidden;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+        background-color: var(--c-bg);
+        box-shadow: var(--shadow-sm), var(--shadow-border);
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        font-size: var(--text-s-sm);
+        color: var(--c-text);
+        line-height: 1.5;
+        text-align: left;
+        vertical-align: middle;
+
+        thead {
+            tr {
+                th {
+                    padding: 12px 24px;
+                    background-color: var(--c-control);
+                    border-bottom: 1px solid var(--c-border);
+                    font-size: 14px;
+                    font-weight: 500;
+                    white-space: nowrap;
+                }
+            }
+        }
+        tbody {
+            tr {
+                td {
+                    padding: 12px 24px;
+                    white-space: nowrap;
+                    font-size: 14px;
+                }
+
+                &:hover {
+                    background-color: var(--c-active);
+                }
+
+                &:not(:last-of-type) td {
+                    border-bottom: 1px solid var(--c-border);
+                }
+            }
+        }
+    }
+
+    .actions {
+        padding: 8px 12px;
+        border-top: 1px solid var(--c-border);
+    }
+}

@@ -64,7 +64,6 @@ model Patient {
     userId              String    @unique
     user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    appointmentRequests AppointmentRequest[]
     appointments        Appointment[]
     treatmentPlans      TreatmentPlan[]
 }
@@ -92,6 +91,7 @@ model Department {
     id          String   @id @default(cuid())
     name        String
     description String
+    appointmentRequests     AppointmentRequest[]
     services    Service[]
     doctors     Doctor[]
 }
@@ -121,15 +121,20 @@ model Appointment {
 }
 
 model AppointmentRequest {
-    id        String   @id @default(cuid())
-    date      DateTime
+    id              String   @id @default(cuid())
+    date            DateTime
+    name            String
+    surname         String
+    phone           String
+    email           String?
     
-    serviceId String
-    doctorId  String
-    patientId String
-    service   Service  @relation(fields: [serviceId], references: [id])
-    patient   Patient     @relation(fields: [patientId], references: [id])
-    doctor    Doctor     @relation(fields: [doctorId], references: [id])
+    departmentId    String
+    serviceId       String
+    doctorId        String?
+
+    departemnt      Department  @relation(fields: [departmentId], references: [id])
+    service         Service     @relation(fields: [serviceId], references: [id])
+    doctor          Doctor?     @relation(fields: [doctorId], references: [id])
 }
 
 enum TreatmentStatus {

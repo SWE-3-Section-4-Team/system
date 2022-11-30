@@ -1,12 +1,54 @@
 import argon2 from 'argon2';
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
 import { doctorEditSchema, doctorSchema } from "../../../schema/doctor";
+import { z } from 'zod';
+import { uploadFile } from '../../s3/uploadFile';
+import { parseFile } from '../../utils/base64toFile';
 
 export const doctorRouter = router({
+  search: publicProcedure
+    .input(z.object({
+      query: z.string().min(1).max(255),
+    }))
+    .query(async ({ input, ctx }) => {
+      const { query } = input;
+
+      const doctors = await ctx.prisma.doctor.findMany({
+        where: {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              surname: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              middlename: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
+        include: {
+          user: true,
+          department: true,
+          service: true,
+        },
+      });
+
+      return doctors;
+    }),
   register: protectedProcedure
     .input(doctorSchema)
     .mutation(async ({ input, ctx }) => {
-      const { pin, password, departmentId, serviceId, ...rest } = input;
+      const { pin, password, departmentId, serviceId, avatar, ...rest } = input;
 
       if (!ctx.session.user.id) {
         throw new Error('Unauthorized');
@@ -20,6 +62,14 @@ export const doctorRouter = router({
 
       if (!creator || creator.role !== "ADMIN") {
         throw new Error("Unauthorized");
+      }
+
+      if (avatar) {
+        const file = parseFile(avatar);
+
+        if (file) {
+          await uploadFile(`avatars/${input.pin}`, file.data);
+        }
       }
 
       const exists = await ctx.prisma.user.findFirst({
@@ -117,7 +167,7 @@ export const doctorRouter = router({
         throw new Error('Unauthorized');
       }
 
-      const { departmentId, serviceId, ...rest } = input;
+      const { departmentId, serviceId, avatar, ...rest } = input;
 
       const creator = await ctx.prisma.user.findFirst({
         where: {
@@ -127,6 +177,14 @@ export const doctorRouter = router({
 
       if (!creator || creator.role !== "ADMIN") {
         throw new Error("Unauthorized");
+      }
+
+      if (avatar) {
+        const file = parseFile(avatar);
+
+        if (file) {
+          await uploadFile(`avatars/${input.pin}`, file.data);
+        }
       }
 
       const department = await ctx.prisma.department.findFirst({

@@ -1,12 +1,15 @@
-import { patientEditSchema, patientSchema } from "../../../schema/patient";
+import { appointmentRequestSchema, patientEditSchema, patientSchema } from "../../../schema/patient";
 import argon2 from 'argon2';
-import { router, protectedProcedure } from "../trpc";
+import { router, protectedProcedure, publicProcedure } from "../trpc";
+import { parseFile } from "../../utils/base64toFile";
+import { uploadFile } from "../../s3/uploadFile";
+import { z } from "zod";
 
 export const patientRouter = router({
   register: protectedProcedure
     .input(patientSchema)
     .mutation(async ({ input, ctx }) => {
-      const { pin, password, ...rest } = input;
+      const { pin, password, avatar, ...rest } = input;
 
       if (!ctx.session.user.id) {
         throw new Error('Unauthorized');
@@ -28,6 +31,14 @@ export const patientRouter = router({
 
       if (exists) {
         throw new Error("User already exists");
+      }
+
+      if (avatar) {
+        const file = parseFile(avatar);
+
+        if (file) {
+          await uploadFile(`avatars/${input.pin}`, file.data);
+        }
       }
 
       const hashedPassword = await argon2.hash(password);
@@ -87,6 +98,8 @@ export const patientRouter = router({
         throw new Error('Unauthorized');
       }
 
+      const { avatar, ...rest } = input;
+
       const creator = await ctx.prisma.user.findFirst({
         where: {
           id: ctx.session.user.id,
@@ -97,15 +110,63 @@ export const patientRouter = router({
         throw new Error("Unauthorized");
       }
 
+      if (avatar) {
+        const file = parseFile(avatar);
+
+        if (file) {
+          await uploadFile(`avatars/${input.pin}`, file.data);
+        }
+      }
+
       const patient = await ctx.prisma.patient.update({
         where: {
           pin: input.pin,
         },
         data: {
-          ...input,
+          ...rest,
         },
       });
 
       return patient;
+    }),
+
+  appointment: publicProcedure
+    .input(appointmentRequestSchema)
+    .mutation(async ({ input, ctx }) => {
+      if (!input.doctorId) {
+        delete input.doctorId;
+      }
+      const appointmentRequest = await ctx.prisma.appointmentRequest.create({
+        data: {
+          ...input,
+          date: new Date(input.date),
+        },
+      });
+
+      return appointmentRequest;
+    }),
+  getAppointments: protectedProcedure
+    .query(async ({ ctx }) => {
+      if (!ctx.session.user.id) {
+        throw new Error('Unauthorized');
+      }
+
+      const creator = await ctx.prisma.user.findFirst({
+        where: {
+          id: ctx.session.user.id,
+        },
+      });
+
+      if (!creator || creator.role !== "ADMIN") {
+        throw new Error("Unauthorized");
+      }
+
+      const appointments = await ctx.prisma.appointmentRequest.findMany({
+        include: {
+          doctor: true,
+        },
+      });
+
+      return appointments;
     }),
 });

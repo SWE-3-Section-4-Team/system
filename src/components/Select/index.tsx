@@ -1,22 +1,23 @@
-import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/solid';
+import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from '@radix-ui/react-icons';
 import * as SelectBase from '@radix-ui/react-select';
 
 import cls from './Select.module.scss';
 
 interface AdvanceOption {
     label: React.ReactNode;
-    value: string;
+    value: string | number;
 }
 
 type Props = SelectBase.SelectProps & {
     items: AdvanceOption[];
     label?: string;
+    style?: React.CSSProperties;
 }
 
-export const Select: React.FC<Props> = ({ label, items, ...props }) => {
+export const Select: React.FC<Props> = ({ label, items, style, ...props }) => {
     return (
-        <SelectBase.Root  {...props}>
-            <SelectBase.Trigger className={cls.root}>
+        <SelectBase.Root {...props}>
+            <SelectBase.Trigger style={style} className={cls.root}>
                 {label && <label className={cls.label}>{label}</label>}
                 <div className={cls.select}>
                     <SelectBase.Value className={cls.value} />
@@ -33,7 +34,7 @@ export const Select: React.FC<Props> = ({ label, items, ...props }) => {
                     </SelectBase.ScrollUpButton>
                     <SelectBase.Viewport>
                         {items.map(({ value, label }) => (
-                            <SelectBase.Item className={cls.item} value={value} key={value}>
+                            <SelectBase.Item className={cls.item} value={String(value)} key={value}>
                                 <div className={cls.itemContent}>
                                     <SelectBase.ItemText>
                                         {label}

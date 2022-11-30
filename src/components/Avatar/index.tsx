@@ -7,9 +7,11 @@ import { Loader } from '../Loader';
 import type { Size } from '../../types/size';
 
 import cls from './Avatar.module.scss';
+import { env } from '../../env/client.mjs';
 
 export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
   image?: string;
+  pin?: string;
   name?: string;
   size?: Size;
   loading?: boolean;
@@ -18,7 +20,7 @@ export interface AvatarProps extends HTMLAttributes<HTMLSpanElement> {
 const getInitials = (name: string) => name.split(' ').map((n) => n[0]?.toUpperCase() || '').join('');
 
 export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
-  ({ image, name, size = 'sm', className, loading, ...props }, ref) => (
+  ({ image, name, size = 'sm', className, loading, pin, ...props }, ref) => (
     <AvatarBase.Root
       ref={ref}
       className={clsx(className, cls.root)}
@@ -32,7 +34,7 @@ export const Avatar = React.forwardRef<HTMLSpanElement, AvatarProps>(
       ) : (
         <>
           <AvatarBase.AvatarImage
-            src={image}
+            src={pin ? `${env.NEXT_PUBLIC_S3_ENDPOINT}/${env.NEXT_PUBLIC_S3_BUCKET_NAME}/avatars/${pin}` : image}
             alt={name}
             className={cls.img}
           />

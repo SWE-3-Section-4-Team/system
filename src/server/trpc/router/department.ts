@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { protectedProcedure, router } from "../trpc";
+import { publicProcedure, router } from "../trpc";
 
 export const departmentRouter = router({
-    get: protectedProcedure
+    get: publicProcedure
         .query(async ({ ctx }) => {
             const departments = await ctx.prisma.department.findMany();
             return departments;
         }),
-    getServices: protectedProcedure
+    getServices: publicProcedure
         .input(z.string())
         .query(async ({ input, ctx }) => {
             const services = await ctx.prisma.service.findMany({
@@ -17,7 +17,7 @@ export const departmentRouter = router({
             });
             return services;
         }),
-    getAllSerivces: protectedProcedure
+    getAllSerivces: publicProcedure
         .query(async ({ ctx }) => {
             const departments = await ctx.prisma.department.findMany();
             const services = await ctx.prisma.service.findMany();

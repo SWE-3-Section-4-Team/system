@@ -1,9 +1,10 @@
-import React, { HTMLAttributes, ReactNode, useId } from 'react';
+import type { ReactNode} from 'react';
+import React, { useId } from 'react';
 import InputMask from 'react-input-mask';
 
 import cls from './Input.module.scss';
 
-interface Props extends HTMLAttributes<HTMLInputElement> {
+interface Props extends React.ComponentProps<'input'> {
   type?: 'text' | 'password' | 'number' | 'email' | 'tel' | 'url' | 'date' | 'datetime-local';
   left?: ReactNode;
   right?: ReactNode;
@@ -57,7 +58,7 @@ export const Input = React.forwardRef<HTMLInputElement, Props & { mask?: string 
 
 Input.displayName = 'Input';
 
-interface TextAreaProps extends HTMLAttributes<HTMLTextAreaElement> {
+interface TextAreaProps extends React.ComponentProps<'textarea'>{
   label?: string;
   error?: boolean | string;
   value?: string;

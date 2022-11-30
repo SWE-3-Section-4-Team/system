@@ -16,6 +16,7 @@ const MARTIAL_STATUSES = {
 } as const;
 
 export const patientSchema = z.object({
+    avatar: z.string().optional(),
     pin: z.string().regex(PIN_REGEXP),
     password: z.string().min(8).max(255),
     name: z.string().min(1).max(255),
@@ -32,6 +33,7 @@ export const patientSchema = z.object({
 export type PatientSchema = z.infer<typeof patientSchema>;
 
 export const patientEditSchema = z.object({
+    avatar: z.string().optional(),
     pin: z.string().regex(PIN_REGEXP),
     name: z.string().min(1).max(255),
     surname: z.string().min(1).max(255),
@@ -43,3 +45,16 @@ export const patientEditSchema = z.object({
 });
 
 export type PatientEditSchema = z.infer<typeof patientEditSchema>;
+
+export const appointmentRequestSchema = z.object({
+    date: z.string(),
+    departmentId: z.string(),
+    serviceId: z.string(),
+    doctorId: z.string().optional(),
+    name: z.string().min(1).max(255),
+    surname: z.string().min(1).max(255),
+    email: z.string().email().max(255).optional().nullable(),
+    phone: z.string().regex(TEL_REGEXP),
+});
+
+export type AppointmentRequestSchema = z.infer<typeof appointmentRequestSchema>;

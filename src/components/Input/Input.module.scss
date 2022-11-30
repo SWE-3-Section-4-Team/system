@@ -37,6 +37,11 @@
   & > input {
     height: 36px;
     padding: 0 12px;
+
+    &[type="date"] {
+      display: flex;
+      align-items: center;
+    }
   }
 
   & > textarea {
